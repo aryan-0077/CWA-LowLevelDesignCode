@@ -18,8 +18,6 @@ public class Show {
     // Duration of the show in seconds
     private final Integer durationInMinutes;
 
-
-
     public Show(final int id, final Movie movie, final Screen screen, final Date startTime, final Integer durationInMinutes) {
         this.id = id;
         this.movie = movie;
@@ -27,36 +25,19 @@ public class Show {
         this.startTime = startTime;
         this.durationInMinutes = durationInMinutes;
     }
-
-
-// Getters Section Start
-
+    // Getters Section Start
     public int getId() {
         return id;
     }
-
-
-    public Movie getMovie() {
-        return movie;
-    }
-
-
-
+    public Movie getMovie() { return movie;}
     public Screen getScreen() {
         return screen;
     }
-
-
-
     public Date getStartTime() {
         return startTime;
     }
-
-
-
     public Integer getdurationInMinutes() {
         return durationInMinutes;
     }
     // Getters Section End
-
 }

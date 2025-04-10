@@ -3,15 +3,9 @@ package CoreClasses;
 import CommonEnum.SeatCategory;
 
 public class Seat {
-
-    // Unique identifier for the seat
-    private final int seatId;
-
-    // Row number where the seat is located
-    private final int row;
-
-    // Category of the seat (e.g., Silver, Gold, Platinum)
-    private final SeatCategory seatCategory;
+    private final int seatId; // Unique identifier for the seat
+    private final int row; // Row number where the seat is located
+    private final SeatCategory seatCategory; // Category of the seat (e.g., Silver, Gold, Platinum)
 
     public Seat(final int seatId,final int row, final SeatCategory seatCategory) {
         this.seatId = seatId;
@@ -26,7 +20,6 @@ public class Seat {
     public int getRow() {
         return row;
     }
-
     public SeatCategory getSeatCategory() {
         return seatCategory;
     }
