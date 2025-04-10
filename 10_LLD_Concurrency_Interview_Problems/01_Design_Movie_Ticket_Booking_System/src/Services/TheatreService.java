@@ -88,6 +88,5 @@ public class TheatreService {
         Screen screen = new Screen(screenId, screenName, theatre);
         screens.put(screenId, screen); // Store screen in map
         return screen;
-
     }
 }

@@ -5,7 +5,7 @@ import CoreClasses.Show;
 
 import java.util.ArrayList;
 import java.util.List;
-import Interfaces.SeatLockProvider;
+import Interfaces.ISeatLockProvider;
 
 public class SeatAvailabilityService {
 
@@ -13,12 +13,10 @@ public class SeatAvailabilityService {
     private final BookingService bookingService;
 
     // Dependency for checking currently locked (but not yet booked) seats
-    private final SeatLockProvider seatLockProvider;
-
+    private final ISeatLockProvider seatLockProvider;
 
     // Constructor to initialize dependencies
-
-    public SeatAvailabilityService(final BookingService bookingService, final SeatLockProvider seatLockProvider) {
+    public SeatAvailabilityService(final BookingService bookingService, final ISeatLockProvider seatLockProvider) {
         this.bookingService = bookingService;
         this.seatLockProvider = seatLockProvider;
     }

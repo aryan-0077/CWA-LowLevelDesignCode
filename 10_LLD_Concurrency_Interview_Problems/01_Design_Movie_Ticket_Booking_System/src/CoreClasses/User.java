@@ -1,30 +1,18 @@
 package CoreClasses;
 
-
-
 public class User {
-
-
-
-    // Name of the theatre
-
-    private final String name;
-
-    // Email of the User
-    private final String emailAddress;
+    private final String name; // Name of the user
+    private final String emailAddress;  // Email of the User
 
     public User(final String name, final String emailAddress) {
         this.name = name;
         this.emailAddress = emailAddress;
     }
 
-
     // Getters Section Start
-
     public String getUserName() {
         return name;
     }
-
     public String getUserEmail() {
         return emailAddress;
     }

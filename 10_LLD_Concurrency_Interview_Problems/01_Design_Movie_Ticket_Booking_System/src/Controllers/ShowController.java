@@ -17,34 +17,20 @@ public class ShowController {
 
     // Dependencies injected for handling show operations, theatre data, movie data, and seat availability.
     private final SeatAvailabilityService seatAvailabilityService;
-
     private final ShowService showService;
-
     private final TheatreService theatreService;
-
     private final MovieService movieService;
 
-
-
-
     // Constructor to inject all required services
-
     public ShowController(SeatAvailabilityService seatAvailabilityService, ShowService showService,
-
                           TheatreService theatreService, MovieService movieService) {
-
         this.seatAvailabilityService = seatAvailabilityService;
-
         this.showService = showService;
-
         this.theatreService = theatreService;
-
         this.movieService = movieService;
-
     }
 
     public int createShow(final int movieId, final int screenId, final Date startTime,
-
                              final Integer durationInSeconds) throws Exception{
         final Screen screen = theatreService.getScreen(screenId);
         final Movie movie = movieService.getMovie(movieId);

@@ -5,15 +5,9 @@ import java.util.List;
 
 public class Theatre {
 
-
-    // Unique identifier for the theatre
-    private final int id;
-
-    // Name of the theatre
-    private final String name;
-
-    // List of screens available in the theatre
-    private final List<Screen> screens;
+    private final int id;  // Unique identifier for the theatre
+    private final String name; // Name of the theatre
+    private final List<Screen> screens; // List of screens available in the theatre
 
     public Theatre(final int id,final String name) {
         this.id = id;
@@ -26,11 +20,9 @@ public class Theatre {
     }
 
     // Getters Section Start
-
     public int getTheatreId() {
         return id;
     }
-
     public List<Screen> getScreen() {
         return screens;
     }
