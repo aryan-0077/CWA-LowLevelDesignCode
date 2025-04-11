@@ -1,8 +1,7 @@
 package public_interface;
 import model.Message;
 
-public interface IProducer {
+public interface IPublisher {
     String getId();
-
     void publish(String topicId, Message message) throws IllegalArgumentException;
 }

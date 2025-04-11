@@ -6,59 +6,36 @@ import java.util.List;
 
 public class Topic {
 
-    // Name of the topic, used for identification/display purposes.
-    private final String topicName;
-    // Unique identifier for the topic.
-    private final String topicId;
+    private final String topicName; // Name of the topic, used for identification/display purposes.
+    private final String topicId; // Unique identifier for the topic.
 
     // List to store all messages published to this topic.
     // This list is exposed to the outside using an immutable getter.
     private final List<Message> messages;
 
-
-
-    // List of subscribers who have subscribed to this topic.
-
-    // This list is exposed to the outside using an immutable getter.
-
-    private final List<TopicSubscriber> subscribers;
-
     public Topic(final String topicName, final String topicId) {
-
         this.topicName = topicName;
-
         this.topicId = topicId;
-
         this.messages = new ArrayList<>();
-
-        this.subscribers = new ArrayList<>();
-
-    }
-
-    public synchronized void addMessage(final Message message) {
-        messages.add(message);
-    }
-
-    public void addSubscriber(final TopicSubscriber subscriber) {
-        subscribers.add(subscriber);
     }
 
     public String getTopicName() {
         return topicName;
     }
+
     public String getTopicId() {
         return topicId;
     }
 
-    public List<Message> getMessages() {
+    // Synchronized so that add and wait/notify work properly.
+    public synchronized void addMessage(Message message) {
+        messages.add(message);
+        // Notify all waiting subscriber threads that a new message is available.
+        notifyAll();
+    }
+
+    public synchronized List<Message> getMessages() {
         return Collections.unmodifiableList(messages);
     }
-
-
-    public List<TopicSubscriber> getSubscribers() {
-        return Collections.unmodifiableList(subscribers);
-    }
-
     // Getters Section End
-
 }
