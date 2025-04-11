@@ -1,63 +1,69 @@
 package UtilityClasses;
 
-public class DoublyLinkedList<E> {
-
-    DoublyLinkedListNode<E> dummyHead;
-    DoublyLinkedListNode<E> dummyTail;
+public class DoublyLinkedList<K> {
+    private DoublyLinkedListNode<K> head;
+    private DoublyLinkedListNode<K> tail;
 
     public DoublyLinkedList() {
-        // We can instantiate these by null, since we are never gonna use val for these dummyNodes
-        dummyHead = new DoublyLinkedListNode<>(null);
-        dummyTail = new DoublyLinkedListNode<>(null);
-
-        // Also Initially there are no items
-        // so just join dummyHead and Tail, we can add items in between them easily.
-        dummyHead.next = dummyTail;
-        dummyTail.prev = dummyHead;
+        this.head = null;
+        this.tail = null;
     }
 
-    public void detachNode(DoublyLinkedListNode<E> node) {
-        // Just Simply modifying the pointers.
-        if (node != null) {
+    /**
+     * Adds a node to the tail of the list.
+     */
+    public void addNodeAtTail(DoublyLinkedListNode<K> node) {
+        if (tail == null) {
+            head = node;
+            tail = node;
+        } else {
+            tail.next = node;
+            node.prev = tail;
+            tail = node;
+        }
+        node.next = null;
+    }
+
+    /**
+     * Detaches a node from the list.
+     */
+    public void detachNode(DoublyLinkedListNode<K> node) {
+        if (node == null) return;
+        if (node.prev != null) {
             node.prev.next = node.next;
+        } else {
+            // Node is head.
+            head = node.next;
+        }
+        if (node.next != null) {
             node.next.prev = node.prev;
+        } else {
+            // Node is tail.
+            tail = node.prev;
         }
+        node.prev = null;
+        node.next = null;
     }
 
-    public void addNodeAtLast(DoublyLinkedListNode<E> node) {
-        DoublyLinkedListNode tailPrev = dummyTail.prev;
-        tailPrev.next = node;
-        node.next = dummyTail;
-        dummyTail.prev = node;
-        node.prev = tailPrev;
+    /**
+     * Returns the head node (the least recently used).
+     */
+    public DoublyLinkedListNode<K> getHead() {
+        return head;
     }
 
-    public DoublyLinkedListNode<E> addElementAtLast(E element) throws Exception {
-        if (element == null) {
-            throw new Exception("No element found to be added");
+    /**
+     * Removes the head node from the list.
+     */
+    public void removeHead() {
+        if (head != null) {
+            if (head.next != null) {
+                head = head.next;
+                head.prev = null;
+            } else {
+                head = null;
+                tail = null;
+            }
         }
-        DoublyLinkedListNode<E> newNode = new DoublyLinkedListNode<>(element);
-        addNodeAtLast(newNode);
-        return newNode;
-    }
-
-    public boolean isItemPresent() {
-        return dummyHead.next != dummyTail;
-    }
-
-    public DoublyLinkedListNode getFirstNode() throws Exception {
-        DoublyLinkedListNode item = null;
-        if (!isItemPresent()) {
-            return null;
-        }
-        return dummyHead.next;
-    }
-
-    public DoublyLinkedListNode getLastNode() throws Exception {
-        DoublyLinkedListNode item = null;
-        if (!isItemPresent()) {
-            return null;
-        }
-        return dummyTail.prev;
     }
 }

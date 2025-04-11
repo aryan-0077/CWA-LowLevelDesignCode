@@ -7,35 +7,46 @@ import UtilityClasses.DoublyLinkedListNode;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LRUEvictionAlgorithm <Key> implements EvictionAlgorithm<Key> {
+import java.util.HashMap;
+import java.util.Map;
 
-    private DoublyLinkedList<Key> doublyLinkedList;
-    private Map<Key, DoublyLinkedListNode<Key>> map;
+public class LRUEvictionAlgorithm<K> implements EvictionAlgorithm<K> {
+    // A custom doubly linked list to track the LRU order.
+    private final DoublyLinkedList<K> dll;
+    // Map of key to its node in the linked list.
+    private final Map<K, DoublyLinkedListNode<K>> keyToNodeMap;
 
     public LRUEvictionAlgorithm() {
-        this.doublyLinkedList = new DoublyLinkedList<>();
-        this.map = new HashMap<>();
+        this.dll = new DoublyLinkedList<>();
+        this.keyToNodeMap = new HashMap<>();
     }
 
     @Override
-    public void keyAccessed(Key key) throws Exception {
-        DoublyLinkedListNode<Key> node = map.get(key);
-        if(map.containsKey(key)){
-          doublyLinkedList.detachNode(node);
-          doublyLinkedList.addNodeAtLast(node);
-        }else{
-            DoublyLinkedListNode<Key> newNode = doublyLinkedList.addElementAtLast(key);
-           map.put(key , node);
+    public synchronized void keyAccessed(K key) throws Exception {
+        if (keyToNodeMap.containsKey(key)) {
+            // Move the node to the tail (most recently used).
+            DoublyLinkedListNode<K> node = keyToNodeMap.get(key);
+            dll.detachNode(node);
+            dll.addNodeAtTail(node);
+        } else {
+            // New key: add it to the tail.
+            DoublyLinkedListNode<K> newNode = new DoublyLinkedListNode<>(key);
+            dll.addNodeAtTail(newNode);
+            keyToNodeMap.put(key, newNode);
         }
     }
 
     @Override
-    public Key evictKey() throws Exception {
-        DoublyLinkedListNode<Key> first = doublyLinkedList.getFirstNode();
-        if(first == null) {
+    public synchronized K evictKey() throws Exception {
+        // Evict the least recently used key (from the head).
+        DoublyLinkedListNode<K> nodeToEvict = dll.getHead();
+        if (nodeToEvict == null) {
             return null;
         }
-        doublyLinkedList.detachNode(first);
-        return first.getDLLElement();
+        K evictKey = nodeToEvict.getValue();
+        dll.removeHead();
+        keyToNodeMap.remove(evictKey);
+        return evictKey;
     }
 }
+

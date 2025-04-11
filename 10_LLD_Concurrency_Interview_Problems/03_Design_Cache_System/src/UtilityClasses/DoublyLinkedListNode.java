@@ -2,25 +2,17 @@ package UtilityClasses;
 
 
 public class DoublyLinkedListNode<K> {
-    DoublyLinkedListNode<K> next;
+    private final K value;
     DoublyLinkedListNode<K> prev;
-    K dllElement;
+    DoublyLinkedListNode<K> next;
 
-    public DoublyLinkedListNode(K dllElement) {
-        this.dllElement = dllElement;
-        this.next = null;
+    public DoublyLinkedListNode(K value) {
+        this.value = value;
         this.prev = null;
+        this.next = null;
     }
 
-    public DoublyLinkedListNode<K> getNextNode(){
-        return next;
-    }
-
-    public DoublyLinkedListNode<K> getPreviousNode(){
-        return prev;
-    }
-
-    public K getDLLElement(){
-        return dllElement;
+    public K getValue() {
+        return value;
     }
 }
