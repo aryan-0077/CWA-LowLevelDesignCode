@@ -4,7 +4,7 @@ import CoreClasses.Booking;
 import CoreClasses.Show;
 import CoreClasses.Seat;
 import CoreClasses.User;
-import Interfaces.SeatLockProvider;
+import Interfaces.ISeatLockProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,15 +20,13 @@ public class BookingService {
     private final Map<String, Booking> showBookings;
 
     // Provider responsible for handling temporary seat locks
-    private final SeatLockProvider seatLockProvider;
+    private final ISeatLockProvider seatLockProvider;
 
     // Atomic integer to generate unique booking IDs
     private final AtomicInteger bookingIdCounter = new AtomicInteger(1);
 
-
-
     // Constructor to initialize dependencies
-    public BookingService(SeatLockProvider seatLockProvider) {
+    public BookingService(ISeatLockProvider seatLockProvider) {
         this.seatLockProvider = seatLockProvider;
         this.showBookings = new HashMap<>();
 
@@ -36,7 +34,7 @@ public class BookingService {
 
     public Booking getBooking(final String bookingId) throws Exception  {
         if (!showBookings.containsKey(bookingId)) {
-            throw new Exception ();
+            throw new Exception ("No Booking exists for the ID : " + bookingId);
         }
         return showBookings.get(bookingId);
     }
@@ -52,15 +50,13 @@ public class BookingService {
 
     public Booking createBooking(final User user, final Show show, final List<Seat> seats) throws Exception{
         // Check if any requested seat is already booked
-        if (isAnySeatAlreadyBooked(show, seats)) throw new Exception ();
+        if (isAnySeatAlreadyBooked(show, seats)) throw new Exception ("Seat Already Booked");
 
         // Lock the seats temporarily for the user
         seatLockProvider.lockSeats(show, seats, user);
 
-
         // Create a new booking with a unique booking ID using AtomicInteger
         final String bookingId = String.valueOf(bookingIdCounter.getAndIncrement());
-
 
         final Booking newBooking = new Booking(bookingId, show, user, seats);
 
@@ -79,13 +75,13 @@ public class BookingService {
 
     public void confirmBooking(final Booking booking, final User user) throws Exception {
         if (!booking.getUser().equals(user)) {
-            throw new Exception (); // User mismatch
+            throw new Exception ("Cannot confirm a booking made by another user"); // User mismatch
         }
 
         // Validate locks for each seat
         for (Seat seat : booking.getSeatsBooked()) {
             if (!seatLockProvider.validateLock(booking.getShow(), seat, user)) {
-                throw new Exception(); // Lock invalid or expired
+                throw new Exception("Acquired Lock is either invalid or has Expired");
             }
         }
         // Mark booking as confirmed

@@ -8,12 +8,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ShowService {
-
-    // Map to hold all created shows (key = show ID)
-    private final Map<Integer, Show> shows;
-
-    // Counter to generate unique IDs for each show
-    private final AtomicInteger showCounter;
+    private final Map<Integer, Show> shows;  // Map to hold all created shows (key = show ID)
+    private final AtomicInteger showCounter;  // Counter to generate unique IDs for each show
 
     // Constructor initializing the shows map and show counter
     public ShowService() {
@@ -46,7 +42,5 @@ public class ShowService {
             }
         }
         return response;
-
     }
-
 }

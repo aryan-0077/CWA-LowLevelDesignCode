@@ -6,7 +6,6 @@ import CoreClasses.Theatre;
 import Services.TheatreService;
 
 public class TheatreController {
-
     private final TheatreService theatreService;
 
     // Constructor to inject TheatreService
@@ -22,7 +21,6 @@ public class TheatreController {
         final Theatre theatre = theatreService.getTheatre(theatreId);
         return theatreService.createScreenInTheatre(screenName, theatre).getScreenId();
     }
-
 
     public int createSeatInScreen(final Integer rowNo, final SeatCategory seatCategory, final int screenId) throws Exception {
         final Screen screen = theatreService.getScreen(screenId);
