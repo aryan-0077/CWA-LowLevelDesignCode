@@ -6,7 +6,7 @@ import CoreClasses.User;
 
 import java.util.List;
 
-public interface SeatLockProvider {
+public interface ISeatLockProvider {
     void lockSeats(Show show, List<Seat> seat, User user) throws Exception;
     void unlockSeats(Show show, List<Seat> seat, User user);
     boolean validateLock(Show show, Seat seat, User user);

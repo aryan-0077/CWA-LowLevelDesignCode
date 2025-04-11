@@ -1,6 +1,14 @@
 package EvictionAlgorithms;
 
-public interface EvictionAlgorithm<Key> {
-    void keyAccessed(Key key) throws Exception;
-    Key evictKey() throws Exception;
+public interface EvictionAlgorithm<K> {
+    /**
+     * Notifies the eviction algorithm that the given key was accessed.
+     */
+    void keyAccessed(K key) throws Exception;
+
+    /**
+     * Selects and removes one key to be evicted (from the cache).
+     */
+    K evictKey() throws Exception;
 }
+

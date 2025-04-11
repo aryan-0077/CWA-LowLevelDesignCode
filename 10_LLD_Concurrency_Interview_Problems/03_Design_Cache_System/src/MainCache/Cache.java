@@ -1,78 +1,110 @@
 package MainCache;
 
-import DataSources.DataStorage;
 import EvictionAlgorithms.EvictionAlgorithm;
+import Executors.KeyBasedExecutor;
+import StorageMechanisms.Interfaces.CacheStorage;
+import StorageMechanisms.Interfaces.DBStorage;
+import WritePolicies.WritePolicy;
+
 import java.util.concurrent.CompletableFuture;
 
-public class Cache<Key, Value> {
-    private final EvictionAlgorithm<Key> evictionAlgorithm;
-    private final DataStorage<Key, Value> dataStorage;
-    private static final Integer THRESHOLD_SIZE = 500;
+// Cache.java
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
-    public Cache(EvictionAlgorithm<Key> evictionAlgorithm, DataStorage<Key, Value> dataStorage) {
+public class Cache<K, V> {
+    private final CacheStorage<K, V> cacheStorage;
+    private final DBStorage<K, V> dbStorage;
+    private final WritePolicy<K, V> writePolicy;
+    private final EvictionAlgorithm<K> evictionAlgorithm;
+    private final KeyBasedExecutor keyBasedExecutor;
+
+    /**
+     * Constructs the cache.
+     *
+     * @param cacheStorage  The in-memory cache (with limited capacity).
+     * @param dbStorage     The underlying persistent storage (database).
+     * @param writePolicy   The write-through policy.
+     * @param evictionAlgorithm  The eviction strategy (custom LRU implementation).
+     * @param numExecutors  Number of single-thread executors for key-based dispatch.
+     */
+    public Cache(CacheStorage<K, V> cacheStorage, DBStorage<K, V> dbStorage,
+                 WritePolicy<K, V> writePolicy, EvictionAlgorithm<K> evictionAlgorithm,
+                 int numExecutors) {
+        this.cacheStorage = cacheStorage;
+        this.dbStorage = dbStorage;
+        this.writePolicy = writePolicy;
         this.evictionAlgorithm = evictionAlgorithm;
-        this.dataStorage = dataStorage;
+        this.keyBasedExecutor = new KeyBasedExecutor(numExecutors);
     }
 
-    public CompletableFuture<Value> get(Key key) throws Exception {
-        try {
-            if(dataStorage.containsKey(key)) {
-                this.evictionAlgorithm.keyAccessed(key);
-                return CompletableFuture.completedFuture(dataStorage.get(key));
+    /**
+     * Reads data from the cache for the given key.
+     * Updates the eviction algorithm as the key is accessed.
+     */
+    public CompletableFuture<V> accessData(K key) {
+        return keyBasedExecutor.submitTask(key, () -> {
+            try {
+                if (!cacheStorage.containsKey(key)) {
+                    throw new Exception("Key not found in cache: " + key);
+                }
+                evictionAlgorithm.keyAccessed(key);
+                return cacheStorage.get(key);
+            } catch (Exception e) {
+                throw new CompletionException(e);
             }
-        } catch (Exception exception) {
-            System.out.println("Tried to access non-existing key.");
-            return null;
-        }
-        return CompletableFuture.completedFuture(null);
+        });
     }
 
-    public CompletableFuture<Void> put(Key key, Value value) throws Exception {
-        try {
-            if(dataStorage.containsKey(key)) {
-                // Updation case
-                return dataStorage.add(key, value)
-                        .thenAccept(v -> {
-                            try {
-                                this.evictionAlgorithm.keyAccessed(key);
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
-            } else {
-                // creation case
-                if(dataStorage.getCapacity() >= THRESHOLD_SIZE) {
-                    Key keyToEvict = this.evictionAlgorithm.evictKey();
-                    if(keyToEvict != null) {
-                        return dataStorage.remove(keyToEvict)
-                                .thenCompose(v -> {
+    /**
+     * Writes (or updates) data in both the cache and DB storage using the write-through policy.
+     * If the key is new and the cache is at capacity, evicts the least recently used key from the cache.
+     */
+    public CompletableFuture<Void> updateData(K key, V value) {
+        return keyBasedExecutor.submitTask(key, () -> {
+            try {
+                if (cacheStorage.containsKey(key)) {
+                    // Update case: perform concurrent write.
+                    writePolicy.write(key, value, cacheStorage, dbStorage);
+                    evictionAlgorithm.keyAccessed(key);
+                } else {
+                    // New key: If the cache is full, evict one key.
+                    if (cacheStorage.size() >= cacheStorage.getCapacity()) {
+                        K evictedKey = evictionAlgorithm.evictKey();
+                        if (evictedKey != null) {
+                            // Removal on the evicted key's executor to maintain ordering.
+                            int currentIndex = keyBasedExecutor.getExecutorIndexForKey(key);
+                            int evictedIndex = keyBasedExecutor.getExecutorIndexForKey(evictedKey);
+                            if (currentIndex == evictedIndex) {
+                                cacheStorage.remove(evictedKey);
+                            } else {
+                                CompletableFuture<Void> removalFuture = keyBasedExecutor.submitTask(evictedKey, () -> {
                                     try {
-                                        return dataStorage.add(key, value);
-                                    } catch (Exception e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                })
-                                .thenAccept(removeOperationResult -> {
-                                    try {
-                                        this.evictionAlgorithm.keyAccessed(key);
-                                    } catch (Exception e) {
-                                        throw new RuntimeException(e);
+                                        cacheStorage.remove(evictedKey);
+                                        return null;
+                                    } catch (Exception ex) {
+                                        throw new CompletionException(ex);
                                     }
                                 });
-                    }
-                }
-                return dataStorage.add(key, value)
-                        .thenAccept(addOperationResult -> {
-                            try {
-                                this.evictionAlgorithm.keyAccessed(key);
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
+                                removalFuture.join();
                             }
-                        });
+                        }
+                    }
+                    // Write the new key/value concurrently to both storages.
+                    writePolicy.write(key, value, cacheStorage, dbStorage);
+                    evictionAlgorithm.keyAccessed(key);
+                }
+                return null;
+            } catch (Exception e) {
+                throw new CompletionException(e);
             }
-        } catch (Exception exception) {
-            System.out.println("Error occurred while putting key-value pair: " + exception.getMessage());
-            return CompletableFuture.failedFuture(exception);
-        }
+        });
+    }
+
+    /**
+     * Shuts down all executors.
+     */
+    public void shutdown() {
+        keyBasedExecutor.shutdown();
     }
 }

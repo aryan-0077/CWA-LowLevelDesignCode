@@ -17,25 +17,25 @@ public class Booking {
         this.show = show;
         this.seatsBooked = seatsBooked;
         this.user = user;
-        this.bookingStatus = BookingStatus.Created; // Initial booking status is set to Created.
+        this.bookingStatus = BookingStatus.CREATED; // Initial booking status is set to Created.
     }
 
     public boolean isConfirmed() {
-        return this.bookingStatus == BookingStatus.Confirmed;
+        return this.bookingStatus == BookingStatus.CONFIRMED;
     }
 
     public void confirmBooking() throws Exception {
-        if (this.bookingStatus != BookingStatus.Created) {
-            throw new Exception(); // Cannot confirm a booking that is not in the Created state.
+        if (this.bookingStatus != BookingStatus.CREATED) {
+            throw new Exception("Cannot confirm a booking that is not in the Created state.");
         }
-        this.bookingStatus = BookingStatus.Confirmed; // Update the booking status to Confirmed.
+        this.bookingStatus = BookingStatus.CONFIRMED; // Update the booking status to Confirmed.
     }
 
     public void expireBooking() throws Exception {
-        if (this.bookingStatus != BookingStatus.Created) {
-            throw new Exception(); // Cannot expire a booking that is not in the Created state.
+        if (this.bookingStatus != BookingStatus.CREATED) {
+            throw new Exception("Cannot expire a booking that is not in the Created state.");
         }
-        this.bookingStatus = BookingStatus.Expired; // Update the booking status to Expired.
+        this.bookingStatus = BookingStatus.EXPIRED; // Update the booking status to expire.
     }
 
     // Getters Section Start
