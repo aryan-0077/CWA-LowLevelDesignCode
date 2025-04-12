@@ -8,6 +8,7 @@ import Interfaces.ISeatLockProvider;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class SeatLockProvider implements ISeatLockProvider {
 
@@ -25,69 +26,62 @@ public class SeatLockProvider implements ISeatLockProvider {
 
     @Override
     public void lockSeats(final Show show, final List<Seat> seats, final User user) throws Exception {
-       synchronized (locks) {
-           for (Seat seat : seats) {
-               if (isSeatLocked(show, seat)) {
-                   throw new Exception("Can't lock an already locked seat");
-               }
-           }
-       }
-
-        // All seats are available, proceed to lock each one
-        for (Seat seat : seats) {
-            lockSeat(show, seat, user, lockTimeout);
+        // Get or initialize the seat lock map for this show
+        Map<Seat, SeatLock> seatLocks = locks.computeIfAbsent(show, s -> new ConcurrentHashMap<>());
+        synchronized (seatLocks) {
+            // Check if any of the requested seats is already locked and the lock is still valid
+            for (Seat seat : seats) {
+                if (seatLocks.containsKey(seat)) {
+                    SeatLock existingLock = seatLocks.get(seat);
+                    if (!existingLock.isLockExpired()) {
+                        throw new Exception("Seat " + seat.getSeatId() + " is already locked.");
+                    }
+                }
+            }
+            // All seats available; lock them together
+            Date now = new Date();
+            for (Seat seat : seats) {
+                SeatLock lock = new SeatLock(seat, show, lockTimeout, now, user);
+                seatLocks.put(seat, lock);
+            }
         }
     }
 
     @Override
-    public void unlockSeats(final Show show, final List<Seat> seats, final User  user) {
-        for (Seat seat: seats) {
-            if (validateLock(show, seat, user)) {
-                unlockSeat(show, seat); // Remove lock if it belongs to the user
+    public void unlockSeats(final Show show, final List<Seat> seats, final User user) {
+        Map<Seat, SeatLock> seatLocks = locks.get(show);
+        if (seatLocks == null) return;
+        synchronized (seatLocks) {
+            for (Seat seat : seats) {
+                SeatLock lock = seatLocks.get(seat);
+                if (lock != null && lock.getLockedBy().equals(user)) {
+                    seatLocks.remove(seat);
+                }
             }
         }
     }
 
     @Override
     public boolean validateLock(final Show show, final Seat seat, final User user) {
-        return isSeatLocked(show, seat)
-                && locks.get(show).get(seat).getLockedBy().equals(user);
+        Map<Seat, SeatLock> seatLocks = locks.get(show);
+        if (seatLocks == null) return false;
+        synchronized (seatLocks) {
+            SeatLock lock = seatLocks.get(seat);
+            return lock != null && !lock.isLockExpired() && lock.getLockedBy().equals(user);
+        }
     }
 
     @Override
-
     public List<Seat> getLockedSeats(final Show show) {
-        if (!locks.containsKey(show)) {
-            return Collections.unmodifiableList(new ArrayList<>()); // No locks for this show
+        Map<Seat, SeatLock> seatLocks = locks.get(show);
+        if (seatLocks == null) {
+            return Collections.emptyList();
         }
-
-
-        final List<Seat> lockedSeats = new ArrayList<>();
-        for (Seat seat : locks.get(show).keySet()) {
-            if (isSeatLocked(show, seat)) {
-                lockedSeats.add(seat);
-            }
+        synchronized (seatLocks) {
+            return seatLocks.entrySet().stream()
+                    .filter(entry -> !entry.getValue().isLockExpired())
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
         }
-        return lockedSeats;
-    }
-
-    private void unlockSeat(final Show show, final Seat seat) {
-        if (!locks.containsKey(show)) return;
-        locks.get(show).remove(seat); // Remove seat from the lock map
-    }
-
-    private void lockSeat(final Show show, final Seat seat, final User user, final Integer timeoutInSeconds) {
-        if (!locks.containsKey(show)) {
-            locks.put(show, new HashMap<>());
-        }
-        final SeatLock lock = new SeatLock(seat, show, timeoutInSeconds, new Date(), user);
-        locks.get(show).put(seat, lock);
-    }
-
-
-    private boolean isSeatLocked(final Show show, final Seat seat) {
-        return locks.containsKey(show)
-                && locks.get(show).containsKey(seat)
-                && !locks.get(show).get(seat).isLockExpired();
     }
 }
