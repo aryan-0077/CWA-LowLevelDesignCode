@@ -1,6 +1,6 @@
-package ConcreteSubscribers;
+package Subscriber.ConcreteSubscriber;
 
-import public_interface.ISubscriber;
+import Subscriber.ISubscriber;
 import model.Message;
 
 public class SimpleSubscriber implements ISubscriber {

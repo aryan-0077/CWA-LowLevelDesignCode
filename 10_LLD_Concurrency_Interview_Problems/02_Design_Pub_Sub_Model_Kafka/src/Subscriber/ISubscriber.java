@@ -1,4 +1,4 @@
-package public_interface;
+package Subscriber;
 import model.Message;
 
 public interface ISubscriber {

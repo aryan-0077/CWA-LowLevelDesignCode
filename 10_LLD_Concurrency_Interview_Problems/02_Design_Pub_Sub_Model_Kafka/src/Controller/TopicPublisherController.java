@@ -1,7 +1,7 @@
 package Controller;
 
 import model.Topic;
-import public_interface.IPublisher;
+import Publisher.IPublisher;
 import model.Message;
 
 public class TopicPublisherController {

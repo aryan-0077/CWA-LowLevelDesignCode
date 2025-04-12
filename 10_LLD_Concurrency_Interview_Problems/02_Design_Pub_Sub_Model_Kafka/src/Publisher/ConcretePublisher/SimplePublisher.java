@@ -1,6 +1,6 @@
-package ConcretePublisher;
+package Publisher.ConcretePublisher;
 
-import public_interface.IPublisher;
+import Publisher.IPublisher;
 import model.Message;
 import Controller.KafkaController;
 

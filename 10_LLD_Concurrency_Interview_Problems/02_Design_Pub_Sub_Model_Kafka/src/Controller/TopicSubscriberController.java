@@ -3,7 +3,7 @@ package Controller;
 import model.Topic;
 import model.TopicSubscriber;
 import model.Message;
-import public_interface.ISubscriber;
+import Subscriber.ISubscriber;
 
 public class TopicSubscriberController implements Runnable {
     private final TopicSubscriber topicSubscriber;

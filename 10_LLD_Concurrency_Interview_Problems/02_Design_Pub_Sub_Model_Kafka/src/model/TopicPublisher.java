@@ -1,6 +1,6 @@
 package model;
 
-import public_interface.IPublisher;
+import Publisher.IPublisher;
 
 public class TopicPublisher {
     private final Topic topic;

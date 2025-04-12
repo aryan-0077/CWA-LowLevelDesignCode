@@ -1,6 +1,6 @@
 package model;
 
-import public_interface.ISubscriber;
+import Subscriber.ISubscriber;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TopicSubscriber {

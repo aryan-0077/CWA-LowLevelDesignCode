@@ -1,4 +1,4 @@
-package public_interface;
+package Publisher;
 import model.Message;
 
 public interface IPublisher {

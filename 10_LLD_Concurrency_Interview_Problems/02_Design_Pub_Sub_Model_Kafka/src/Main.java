@@ -1,8 +1,8 @@
 import Controller.KafkaController;
 import model.Topic;
 import model.Message;
-import ConcreteSubscribers.SimpleSubscriber;
-import ConcretePublisher.SimplePublisher;
+import Subscriber.ConcreteSubscriber.SimpleSubscriber;
+import Publisher.ConcretePublisher.SimplePublisher;
 
 public class Main {
     public static void main(String[] args) {
@@ -55,3 +55,40 @@ public class Main {
         kafkaController.shutdown();
     }
 }
+
+
+/*
+Output :
+
+Created topic: Topic1 with id: 1
+Created topic: Topic2 with id: 2
+Subscriber Subscriber1 subscribed to topic: Topic1
+Subscriber Subscriber1 subscribed to topic: Topic2
+Subscriber Subscriber2 subscribed to topic: Topic1
+Subscriber Subscriber3 subscribed to topic: Topic2
+Subscriber Subscriber2 received: Message m1
+Subscriber Subscriber1 received: Message m1
+Message "Message m1" published to topic: Topic1
+Publisher Publisher1 published: Message m1 to topic 1
+Message "Message m2" published to topic: Topic1
+Publisher Publisher1 published: Message m2 to topic 1
+Message "Message m3" published to topic: Topic2
+Publisher Publisher2 published: Message m3 to topic 2
+Subscriber Subscriber1 received: Message m3
+Subscriber Subscriber3 received: Message m3
+Subscriber Subscriber1 received: Message m2
+Subscriber Subscriber2 received: Message m2
+Message "Message m4" published to topic: Topic2
+Subscriber Subscriber1 received: Message m4
+Subscriber Subscriber3 received: Message m4
+Publisher Publisher2 published: Message m4 to topic 2
+Message "Message m5" published to topic: Topic1
+Publisher Publisher1 published: Message m5 to topic 1
+Subscriber Subscriber2 received: Message m5
+Subscriber Subscriber1 received: Message m5
+Offset for subscriber Subscriber1 on topic Topic1 reset to 0
+Subscriber Subscriber1 received: Message m1
+Subscriber Subscriber1 received: Message m2
+Subscriber Subscriber1 received: Message m5
+
+ */

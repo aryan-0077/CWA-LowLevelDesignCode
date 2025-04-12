@@ -2,8 +2,8 @@ package Controller;
 
 import model.Topic;
 import model.TopicSubscriber;
-import public_interface.ISubscriber;
-import public_interface.IPublisher;
+import Subscriber.ISubscriber;
+import Publisher.IPublisher;
 import model.Message;
 
 import java.util.concurrent.*;
@@ -54,12 +54,7 @@ public class KafkaController {
         if (topic == null) {
             throw new IllegalArgumentException("Topic with id " + topicId + " does not exist");
         }
-        // Synchronized block to safely add a message to the topic.
-        synchronized (topic) {
-            topic.addMessage(message);
-            // Notify all waiting subscriber threads that a new message is available.
-            topic.notifyAll();
-        }
+        topic.addMessage(message);
         System.out.println("Message \"" + message.getMessage() + "\" published to topic: " + topic.getTopicName());
     }
 
