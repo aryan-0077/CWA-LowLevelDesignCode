@@ -57,3 +57,13 @@ public class Main {
         }
     }
 }
+
+/*
+
+Output :
+
+A is evicted or not found in cache.
+F: Fig
+B: Blueberry
+
+*/

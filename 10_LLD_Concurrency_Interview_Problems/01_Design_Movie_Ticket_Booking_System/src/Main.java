@@ -149,3 +149,94 @@ public class Main {
         }
     }
 }
+
+/*
+
+Output :
+
+Creating a new theatre...
+Theatre created with ID: 1
+Creating a new screen...
+Screen created with ID: 1
+Creating seats...
+Created seat at row 1 with ID: 1 and category: PLATINUM
+Created seat at row 1 with ID: 2 and category: PLATINUM
+Created seat at row 1 with ID: 3 and category: PLATINUM
+Created seat at row 1 with ID: 4 and category: PLATINUM
+Created seat at row 1 with ID: 5 and category: PLATINUM
+Created seat at row 1 with ID: 6 and category: PLATINUM
+Created seat at row 1 with ID: 7 and category: PLATINUM
+Created seat at row 1 with ID: 8 and category: PLATINUM
+Created seat at row 1 with ID: 9 and category: PLATINUM
+Created seat at row 1 with ID: 10 and category: PLATINUM
+Created seat at row 2 with ID: 11 and category: GOLD
+Created seat at row 2 with ID: 12 and category: GOLD
+Created seat at row 2 with ID: 13 and category: GOLD
+Created seat at row 2 with ID: 14 and category: GOLD
+Created seat at row 2 with ID: 15 and category: GOLD
+Created seat at row 2 with ID: 16 and category: GOLD
+Created seat at row 2 with ID: 17 and category: GOLD
+Created seat at row 2 with ID: 18 and category: GOLD
+Created seat at row 2 with ID: 19 and category: GOLD
+Created seat at row 2 with ID: 20 and category: GOLD
+Created seat at row 3 with ID: 21 and category: GOLD
+Created seat at row 3 with ID: 22 and category: GOLD
+Created seat at row 3 with ID: 23 and category: GOLD
+Created seat at row 3 with ID: 24 and category: GOLD
+Created seat at row 3 with ID: 25 and category: GOLD
+Created seat at row 3 with ID: 26 and category: GOLD
+Created seat at row 3 with ID: 27 and category: GOLD
+Created seat at row 3 with ID: 28 and category: GOLD
+Created seat at row 3 with ID: 29 and category: GOLD
+Created seat at row 3 with ID: 30 and category: GOLD
+Created seat at row 4 with ID: 31 and category: SILVER
+Created seat at row 4 with ID: 32 and category: SILVER
+Created seat at row 4 with ID: 33 and category: SILVER
+Created seat at row 4 with ID: 34 and category: SILVER
+Created seat at row 4 with ID: 35 and category: SILVER
+Created seat at row 4 with ID: 36 and category: SILVER
+Created seat at row 4 with ID: 37 and category: SILVER
+Created seat at row 4 with ID: 38 and category: SILVER
+Created seat at row 4 with ID: 39 and category: SILVER
+Created seat at row 4 with ID: 40 and category: SILVER
+Created seat at row 5 with ID: 41 and category: SILVER
+Created seat at row 5 with ID: 42 and category: SILVER
+Created seat at row 5 with ID: 43 and category: SILVER
+Created seat at row 5 with ID: 44 and category: SILVER
+Created seat at row 5 with ID: 45 and category: SILVER
+Created seat at row 5 with ID: 46 and category: SILVER
+Created seat at row 5 with ID: 47 and category: SILVER
+Created seat at row 5 with ID: 48 and category: SILVER
+Created seat at row 5 with ID: 49 and category: SILVER
+Created seat at row 5 with ID: 50 and category: SILVER
+
+Creating a new movie...
+Movie created with ID: 1
+
+Creating a new show...
+Show created with ID: 1
+
+Checking available seats...
+Available seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
+
+Creating a user...
+User created: John Doe with email: john.doe@example.com
+
+Sequential booking of seats 1, 2, 3...
+Booking created with ID: 1
+
+Processing payment...
+Payment processed successfully!
+
+Booking status: CONFIRMED
+Is booking confirmed? true
+
+Checking available seats after booking...
+Available seats: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
+
+Simulating concurrent booking attempts...
+User2 booking (seats 7,8,9) succeeded with Booking ID: 2
+
+Final available seats after concurrent booking attempts: [4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
+User1 booking (seats 5,6,7) failed: Seat 7 is already locked.
+*/
